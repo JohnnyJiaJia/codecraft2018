@@ -146,4 +146,5 @@ def predict_vm(ecs_lines, input_lines):
     flavor_num = int(input_lines[2].strip())
     # print flavor_num
     flavors = []
+    fd = total_num(ecs_lines)
     return result
