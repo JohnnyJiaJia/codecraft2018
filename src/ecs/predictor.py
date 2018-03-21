@@ -60,7 +60,6 @@ def assign(opt, p, fs):
 
 
 def direct_assign(physical, flavors):
-    # 对结果直接分配
     fs = [f for f in flavors if f[-1] > 0]
     if len(fs) <= 0:
         return ["0"]
@@ -104,9 +103,7 @@ def predict_vm_hehe(ecs_lines, input_lines):
     predict_days = (end - start).days
     physical = [int(i) for i in input_lines[0].strip().split()]
     physical[1] = physical[1]
-    # print physical
     flavor_num = int(input_lines[2].strip())
-    # print flavor_num
     flavors = []
     fd = total_num(ecs_lines)
     predict_num = 0
@@ -117,17 +114,10 @@ def predict_vm_hehe(ecs_lines, input_lines):
         fn = int(f[6:])
         fn_c = fn % 3
         flavors.append([f, fn, fn_c, int(cpu), int(mem) / 1024, n])
-    # print flavors
-    # print predict_num
     result.append(predict_num)
     for f in flavors:
         result.append("{} {}".format(f[0], f[-1]))
     result.append("")
-    optimal_type = input_lines[-4].strip()
-    # print optimal_type
-    # d = average_by_day(ecs_lines)
-    # print input_lines
-    # result += assign(optimal_type, physical, flavors)
     result += direct_assign(physical, flavors)
     return result
 
@@ -159,4 +149,5 @@ def predict_vm(ecs_lines, input_lines):
     for f in flavors:
         result.append("{} {}".format(f[0], f[-1]))
     result.append("")
+    result += direct_assign(physical, flavors)
     return result
