@@ -62,6 +62,7 @@ def alloc(opt_type, physical, flavors):
     ff = []
     for f in fs:
         ff += [f] * f[-1]
+    print ff
     fs = ff
     f_cpu = [f for f in fs if f[2] < R]
     f_mem = [f for f in fs if f[2] > R]
@@ -99,7 +100,7 @@ def alloc(opt_type, physical, flavors):
                     fs, k = (f_mem, j) if opt_type == "CPU" else (f_cpu, i)
                 else:
                     # r <= R 说明cpu密集
-                    fs, k = (f_mem, j) if r <= R else (f_cpu, i)
+                    fs, k = (f_mem, j) if r > R else (f_cpu, i)
                 f = fs[k]
                 cpu -= f[3]
                 mem -= f[4]
