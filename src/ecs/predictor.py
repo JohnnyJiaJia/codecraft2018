@@ -119,7 +119,7 @@ def predict_vm_hehe(ecs_lines, input_lines):
         flavors.append([f, fn, fn_c, int(cpu), int(mem) / 1024, n])
     # print flavors
     # print predict_num
-    result.append(str(predict_num))
+    result.append(predict_num)
     for f in flavors:
         result.append("{} {}".format(f[0], f[-1]))
     result.append("")
@@ -146,5 +146,17 @@ def predict_vm(ecs_lines, input_lines):
     flavor_num = int(input_lines[2].strip())
     # print flavor_num
     flavors = []
-    fd = total_num(ecs_lines)
+    fd = total_num(ecs_lines)  # 统计
+    predict_num = 0
+    for l in input_lines[3:3 + flavor_num]:
+        f, cpu, mem = l.strip().split()
+        n = int(fd[f] * float(predict_days) / total_days)
+        predict_num += n
+        fn = int(f[6:])
+        fn_c = fn % 3
+        flavors.append([f, fn, fn_c, int(cpu), int(mem) / 1024, n])
+    result.append(predict_num)
+    for f in flavors:
+        result.append("{} {}".format(f[0], f[-1]))
+    result.append("")
     return result
