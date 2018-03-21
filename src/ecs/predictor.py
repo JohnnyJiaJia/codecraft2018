@@ -13,54 +13,9 @@ def total_num(ecs_lines):
     return d
 
 
-def opt_cpu(p, l0, l1, l2):
-    result = []
-    num = 0  # num of physical
-    cpu_limit, mem_limit = p[0], p[1]
-    cpu, mem = cpu_limit, mem_limit
-    while l0 or l1 or l2:
-        if mem / cpu > 2:
-            while l0:
-                pass
-        while l2:
-            pass
-        while l1:
-            pass
-    return result
-
-
-def opt_mem(p, l0, l1, l2):
-    result = []
-    return result
-
-
-def assign(opt, p, fs):
-    l0 = []
-    l1 = []
-    l2 = []
-    for f in fs:
-        f_name, fn, fn_c, cpu, mem, cnt = f
-        if cnt:
-            if fn_c == 0:
-                l0.append([fn, cpu, mem, cnt])
-            elif fn_c == 1:
-                l1.append([fn, cpu, mem, cnt])
-            else:
-                l2.append([fn, cpu, mem, cnt])
-    l0.sort(key=lambda x: -x[0])
-    l1.sort(key=lambda x: -x[0])
-    l2.sort(key=lambda x: -x[0])
-    print l0
-    print l1
-    print l2
-    if opt == "CPU":
-        return opt_cpu(p, l0, l1, l2)
-    else:
-        return opt_mem(p, l0, l1, l2)
-
-
 def direct_assign(physical, flavors):
     fs = [f for f in flavors if f[-1] > 0]
+    fs = sorted(fs, key=lambda x: x[0],reverse=True)
     if len(fs) <= 0:
         return ["0"]
     n = 1
@@ -68,22 +23,22 @@ def direct_assign(physical, flavors):
     cpu, mem = CPU, MEM
     plan = dict()
     plan[n] = dict()
-    for f in fs:
-        for i in range(f[-1]):
-            if f[-3] < cpu and f[-2] < mem:
-                cpu -= f[-3]
-                mem -= f[-2]
-                if f[0] in plan[n]:
-                    plan[n][f[0]] += 1
-                else:
-                    plan[n][f[0]] = 1
-            else:
-                n += 1
-                plan[n] = dict()
-                cpu, mem = CPU, MEM
-                cpu -= f[-3]
-                mem -= f[-2]
-                plan[n][f[0]] += 1
+    # for f in fs:
+    #     for i in range(f[-1]):
+    #         if f[-3] < cpu and f[-2] < mem:
+    #             cpu -= f[-3]
+    #             mem -= f[-2]
+    #             if f[0] in plan[n]:
+    #                 plan[n][f[0]] += 1
+    #             else:
+    #                 plan[n][f[0]] = 1
+    #         else:
+    #             n += 1
+    #             plan[n] = dict()
+    #             cpu, mem = CPU, MEM
+    #             cpu -= f[-3]
+    #             mem -= f[-2]
+    #             plan[n][f[0]] += 1
     result = [len(plan)]
     for i in plan:
         tmp = "{} ".format(i)
