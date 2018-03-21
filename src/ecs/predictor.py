@@ -94,7 +94,7 @@ def direct_assign(physical, flavors):
     return result
 
 
-def predict_vm(ecs_lines, input_lines):
+def predict_vm_hehe(ecs_lines, input_lines):
     result = []
     s = datetime.datetime.strptime(ecs_lines[0].strip().split("\t")[-1], "%Y-%m-%d %H:%M:%S")
     e = datetime.datetime.strptime(ecs_lines[-1].strip().split("\t")[-1], "%Y-%m-%d %H:%M:%S")
@@ -129,4 +129,21 @@ def predict_vm(ecs_lines, input_lines):
     # print input_lines
     # result += assign(optimal_type, physical, flavors)
     result += direct_assign(physical, flavors)
+    return result
+
+
+def predict_vm(ecs_lines, input_lines):
+    result = []
+    s = datetime.datetime.strptime(ecs_lines[0].strip().split("\t")[-1], "%Y-%m-%d %H:%M:%S")
+    e = datetime.datetime.strptime(ecs_lines[-1].strip().split("\t")[-1], "%Y-%m-%d %H:%M:%S")
+    total_days = (e - s).days
+    start = datetime.datetime.strptime(input_lines[-2].strip(), "%Y-%m-%d %H:%M:%S")
+    end = datetime.datetime.strptime(input_lines[-1].strip(), "%Y-%m-%d %H:%M:%S")
+    predict_days = (end - start).days
+    physical = [int(i) for i in input_lines[0].strip().split()]
+    physical[1] = physical[1]
+    # print physical
+    flavor_num = int(input_lines[2].strip())
+    # print flavor_num
+    flavors = []
     return result
