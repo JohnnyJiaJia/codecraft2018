@@ -23,22 +23,22 @@ def direct_assign(physical, flavors):
     cpu, mem = CPU, MEM
     plan = dict()
     plan[n] = dict()
-    # for f in fs:
-    #     for i in range(f[-1]):
-    #         if f[-3] < cpu and f[-2] < mem:
-    #             cpu -= f[-3]
-    #             mem -= f[-2]
-    #             if f[0] in plan[n]:
-    #                 plan[n][f[0]] += 1
-    #             else:
-    #                 plan[n][f[0]] = 1
-    #         else:
-    #             n += 1
-    #             plan[n] = dict()
-    #             cpu, mem = CPU, MEM
-    #             cpu -= f[-3]
-    #             mem -= f[-2]
-    #             plan[n][f[0]] += 1
+    for f in fs:
+        for i in range(f[-1]):
+            if f[-3] <= cpu and f[-2] <= mem:
+                cpu -= f[-3]
+                mem -= f[-2]
+                if f[0] in plan[n]:
+                    plan[n][f[0]] += 1
+                else:
+                    plan[n][f[0]] = 1
+            else:
+                n += 1
+                plan[n] = dict()
+                cpu, mem = CPU, MEM
+                cpu -= f[-3]
+                mem -= f[-2]
+                plan[n][f[0]] = 1
     result = [len(plan)]
     for i in plan:
         tmp = "{} ".format(i)
