@@ -121,7 +121,7 @@ def alloc(opt_type, physical, flavors):
                 f = fs[i]
                 cpu -= f[3]
                 mem -= f[4]
-                fs.pop(0)
+                fs.pop(i)
                 if f[0] in plan[n]:
                     plan[n][f[0]] += 1
                 else:
