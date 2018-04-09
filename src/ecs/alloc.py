@@ -1,8 +1,8 @@
 # coding=utf-8
 
 def direct_assign(physical, flavors):
-    fs = [f for f in flavors if f[-1] > 0]
-    fs = sorted(fs, key=lambda x: x[0], reverse=True)
+    fs = [f for f in flavors if f.num > 0]
+    fs = sorted(fs, key=lambda x: x.id, reverse=True)
     if len(fs) <= 0:
         return ["0"]
     n = 1
@@ -11,21 +11,21 @@ def direct_assign(physical, flavors):
     plan = dict()
     plan[n] = dict()
     for f in fs:
-        for i in range(f[-1]):
-            if f[-3] <= cpu and f[-2] <= mem:
-                cpu -= f[-3]
-                mem -= f[-2]
-                if f[0] in plan[n]:
-                    plan[n][f[0]] += 1
+        for i in range(f.num):
+            if f.cpu <= cpu and f.mem <= mem:
+                cpu -= f.cpu
+                mem -= f.mem
+                if f.name in plan[n]:
+                    plan[n][f.name] += 1
                 else:
-                    plan[n][f[0]] = 1
+                    plan[n][f.name] = 1
             else:
                 n += 1
                 plan[n] = dict()
                 cpu, mem = CPU, MEM
-                cpu -= f[-3]
-                mem -= f[-2]
-                plan[n][f[0]] = 1
+                cpu -= f.cpu
+                mem -= f.mem
+                plan[n][f.name] = 1
     result = [len(plan)]
     for i in plan:
         tmp = "{} ".format(i)
