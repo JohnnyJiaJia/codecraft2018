@@ -1,7 +1,8 @@
 # coding=utf-8
 import datetime
 import alloc_direct as alloc
-import pred_total_avg as pred
+# import pred_total_avg as pred
+import pred_mov_avg as pred
 
 
 class Flavor(object):
@@ -25,7 +26,7 @@ def predict_vm(ecs_lines, input_lines):
         fl = Flavor(f, cpu, mem)
         fs.append(fl)
 
-    # 预测函数需要返回包含各个flavor的字典
+    # 替换预测方式！！
     fd = pred.predict(ecs_lines, start, end, [f.name for f in fs])
 
     for f in fs:
@@ -39,5 +40,8 @@ def predict_vm(ecs_lines, input_lines):
     physical = [int(i) for i in input_lines[0].strip().split()]
 
     fs = [f for f in fs if f.num > 0]
+
+    # 替换分配方式！！
     result += alloc.assign(physical, fs)
+
     return result
