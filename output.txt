@@ -1,14 +1,14 @@
-25
+27
 flavor1 0
 flavor2 1
 flavor3 1
 flavor4 0
 flavor5 5
-flavor6 3
+flavor6 2
 flavor7 2
-flavor8 9
+flavor8 12
 flavor9 4
 
 2
 1 flavor8 8 flavor9 4 
-2 flavor2 1 flavor3 1 flavor5 5 flavor6 3 flavor7 2 flavor8 1 
+2 flavor2 1 flavor3 1 flavor5 5 flavor6 2 flavor7 2 flavor8 4 
