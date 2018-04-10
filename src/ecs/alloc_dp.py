@@ -15,7 +15,7 @@ def assign(opt_type, physical, flavors):
         plan[number] = dict()
         n = len(fs)
         dp = [[[0 for k in range(n + 1)] for j in range(MEM + 1)] for i in range(CPU + 1)]
-        # dp[0][0][0] = 0
+        # 可以修改成二维的
         for i in range(1, CPU + 1):
             for j in range(1, MEM + 1):
                 for k in range(1, n + 1):
@@ -36,6 +36,9 @@ def assign(opt_type, physical, flavors):
                     plan[number][f.name] += 1
                 else:
                     plan[number][f.name] = 1
+        pass
+        # print (CPU - C) * 1.0 / CPU, (MEM - M) * 1.0 / MEM  # 打印利用率
+
     result = [number]
     for i in plan:
         tmp = "{} ".format(i)
