@@ -3,10 +3,12 @@ from datetime import datetime
 import abc
 from random import sample
 from math import exp, log
-from gbdt.tree import construct_decision_tree
+from tree import construct_decision_tree
 
 
-class RegressionLossFunction(metaclass=abc.ABCMeta):
+class RegressionLossFunction:
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self, n_classes):
         self.K = n_classes
 
@@ -29,6 +31,7 @@ class RegressionLossFunction(metaclass=abc.ABCMeta):
 
 class LeastSquaresError(RegressionLossFunction):
     """用于回归的最小平方误差损失函数"""
+
     def __init__(self, n_classes):
         if n_classes != 1:
             raise ValueError("``n_classes`` must be 1 for regression but "
@@ -47,9 +50,9 @@ class LeastSquaresError(RegressionLossFunction):
         subset = set(subset)
         for node in leaf_nodes:
             for id in node.get_idset():
-                f[id] += learn_rate*node.get_predict_value()
-        for id in data_idset-subset:
-            f[id] += learn_rate*tree.get_predict_value(dataset.get_instance(id))
+                f[id] += learn_rate * node.get_predict_value()
+        for id in data_idset - subset:
+            f[id] += learn_rate * tree.get_predict_value(dataset.get_instance(id))
 
     def initialize(self, f, dataset):
         """初始化F0，我们可以用训练样本的所有值的平均值来初始化，为了方便，这里初始化为0.0"""
@@ -59,11 +62,14 @@ class LeastSquaresError(RegressionLossFunction):
 
     def update_ternimal_regions(self, targets, idset):
         sum1 = sum([targets[id] for id in idset])
-        return sum1/len(idset)
+        return sum1 / max(len(idset),1)
 
 
-class ClassificationLossFunction(metaclass=abc.ABCMeta):
+class ClassificationLossFunction:
     """分类损失函数的基类"""
+
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self, n_classes):
         self.K = n_classes
 
@@ -86,6 +92,7 @@ class ClassificationLossFunction(metaclass=abc.ABCMeta):
 
 class BinomialDeviance(ClassificationLossFunction):
     """二元分类的损失函数"""
+
     def __init__(self, n_classes):
         if n_classes != 2:
             raise ValueError("{0:s} requires 2 classes.".format(
@@ -96,7 +103,7 @@ class BinomialDeviance(ClassificationLossFunction):
         residual = {}
         for id in subset:
             y_i = dataset.get_instance(id)['label']
-            residual[id] = 2.0*y_i/(1+exp(2*y_i*f[id]))
+            residual[id] = 2.0 * y_i / (1 + exp(2 * y_i * f[id]))
         return residual
 
     def update_f_value(self, f, tree, leaf_nodes, subset, dataset, learn_rate, label=None):
@@ -104,9 +111,9 @@ class BinomialDeviance(ClassificationLossFunction):
         subset = set(subset)
         for node in leaf_nodes:
             for id in node.get_idset():
-                f[id] += learn_rate*node.get_predict_value()
-        for id in data_idset-subset:
-            f[id] += learn_rate*tree.get_predict_value(dataset.get_instance(id))
+                f[id] += learn_rate * node.get_predict_value()
+        for id in data_idset - subset:
+            f[id] += learn_rate * tree.get_predict_value(dataset.get_instance(id))
 
     def initialize(self, f, dataset):
         ids = dataset.get_instances_idset()
@@ -117,12 +124,13 @@ class BinomialDeviance(ClassificationLossFunction):
         sum1 = sum([targets[id] for id in idset])
         if sum1 == 0:
             return sum1
-        sum2 = sum([abs(targets[id])*(2-abs(targets[id])) for id in idset])
+        sum2 = sum([abs(targets[id]) * (2 - abs(targets[id])) for id in idset])
         return sum1 / sum2
 
 
 class MultinomialDeviance(ClassificationLossFunction):
     """多元分类的损失函数"""
+
     def __init__(self, n_classes, labelset):
         self.labelset = set([label for label in labelset])
         if n_classes < 3:
@@ -138,11 +146,11 @@ class MultinomialDeviance(ClassificationLossFunction):
             p_sum = sum([exp(f[id][x]) for x in label_valueset])
             # 对于同一样本在不同类别的残差，需要在同一次迭代中更新在不同类别的残差
             for label in label_valueset:
-                p = exp(f[id][label])/p_sum
+                p = exp(f[id][label]) / p_sum
                 y = 0.0
                 if dataset.get_instance(id)["label"] == label:
                     y = 1.0
-                residual[id][label] = y-p
+                residual[id][label] = y - p
         return residual
 
     def update_f_value(self, f, tree, leaf_nodes, subset, dataset, learn_rate, label=None):
@@ -150,10 +158,10 @@ class MultinomialDeviance(ClassificationLossFunction):
         subset = set(subset)
         for node in leaf_nodes:
             for id in node.get_idset():
-                f[id][label] += learn_rate*node.get_predict_value()
+                f[id][label] += learn_rate * node.get_predict_value()
         # 更新OOB的样本
-        for id in data_idset-subset:
-            f[id][label] += learn_rate*tree.get_predict_value(dataset.get_instance(id))
+        for id in data_idset - subset:
+            f[id][label] += learn_rate * tree.get_predict_value(dataset.get_instance(id))
 
     def initialize(self, f, dataset):
         ids = dataset.get_instances_idset()
@@ -166,8 +174,8 @@ class MultinomialDeviance(ClassificationLossFunction):
         sum1 = sum([targets[id] for id in idset])
         if sum1 == 0:
             return sum1
-        sum2 = sum([abs(targets[id])*(1-abs(targets[id])) for id in idset])
-        return ((self.K-1)/self.K)*(sum1/sum2)
+        sum2 = sum([abs(targets[id]) * (1 - abs(targets[id])) for id in idset])
+        return ((self.K - 1) / self.K) * (sum1 / sum2)
 
 
 class GBDT:
@@ -187,10 +195,10 @@ class GBDT:
             self.loss = MultinomialDeviance(dataset.get_label_size(), label_valueset)
             f = dict()  # 记录F_{m-1}的值
             self.loss.initialize(f, dataset)
-            for iter in range(1, self.max_iter+1):
+            for iter in range(1, self.max_iter + 1):
                 subset = train_data
                 if 0 < self.sample_rate < 1:
-                    subset = sample(subset, int(len(subset)*self.sample_rate))
+                    subset = sample(subset, int(len(subset) * self.sample_rate))
                 self.trees[iter] = dict()
                 # 用损失函数的负梯度作为回归问题提升树的残差近似值
                 residual = self.loss.compute_residual(dataset, subset, f)
@@ -202,7 +210,8 @@ class GBDT:
                     for id in subset:
                         targets[id] = residual[id][label]
                     # 对某一个具体的label-K分类，选择max-depth个特征构造决策树
-                    tree = construct_decision_tree(dataset, subset, targets, 0, leaf_nodes, self.max_depth, self.loss, self.split_points)
+                    tree = construct_decision_tree(dataset, subset, targets, 0, leaf_nodes, self.max_depth, self.loss,
+                                                   self.split_points)
                     self.trees[iter][label] = tree
                     self.loss.update_f_value(f, tree, leaf_nodes, subset, dataset, self.learn_rate, label)
                 train_loss = self.compute_loss(dataset, train_data, f)
@@ -216,15 +225,16 @@ class GBDT:
 
             f = dict()  # 记录F_{m-1}的值
             self.loss.initialize(f, dataset)
-            for iter in range(1, self.max_iter+1):
+            for iter in range(1, self.max_iter + 1):
                 subset = train_data
                 if 0 < self.sample_rate < 1:
-                    subset = sample(subset, int(len(subset)*self.sample_rate))
+                    subset = sample(subset, int(len(subset) * self.sample_rate))
                 # 用损失函数的负梯度作为回归问题提升树的残差近似值
                 residual = self.loss.compute_residual(dataset, subset, f)
                 leaf_nodes = []
                 targets = residual
-                tree = construct_decision_tree(dataset, subset, targets, 0, leaf_nodes, self.max_depth, self.loss, self.split_points)
+                tree = construct_decision_tree(dataset, subset, targets, 0, leaf_nodes, self.max_depth, self.loss,
+                                               self.split_points)
                 self.trees[iter] = tree
                 self.loss.update_f_value(f, tree, leaf_nodes, subset, dataset, self.learn_rate)
                 if isinstance(self.loss, RegressionLossFunction):
@@ -232,7 +242,7 @@ class GBDT:
                     pass
                 else:
                     train_loss = self.compute_loss(dataset, train_data, f)
-                    print("iter%d : train loss=%f" % (iter,train_loss))
+                    print("iter%d : train loss=%f" % (iter, train_loss))
 
     def compute_loss(self, dataset, subset, f):
         loss = 0.0
@@ -240,9 +250,9 @@ class GBDT:
             for id in dataset.get_instances_idset():
                 y_i = dataset.get_instance(id)['label']
                 f_value = f[id]
-                p_1 = 1/(1+exp(-2*f_value))
+                p_1 = 1 / (1 + exp(-2 * f_value))
                 try:
-                    loss -= ((1+y_i)*log(p_1)/2) + ((1-y_i)*log(1-p_1)/2)
+                    loss -= ((1 + y_i) * log(p_1) / 2) + ((1 - y_i) * log(1 - p_1) / 2)
                 except ValueError as e:
                     print(y_i, p_1)
         else:
@@ -254,10 +264,10 @@ class GBDT:
                     exp_values[label] = exp(f_values[label])
                 probs = {}
                 for label in f_values:
-                    probs[label] = exp_values[label]/sum(exp_values.values())
+                    probs[label] = exp_values[label] / sum(exp_values.values())
                     # 预测的越准确则log(probs[instance["label"]])越接近0 loss也就越小
                 loss -= log(probs[instance["label"]])
-        return loss/dataset.size()
+        return loss / dataset.size()
 
     def compute_instance_f_value(self, instance):
         """计算样本的f值"""
@@ -273,7 +283,7 @@ class GBDT:
                 # 对于多分类问题，为每个类别构造一颗回归树
                 for label in self.loss.labelset:
                     tree = self.trees[iter][label]
-                    f_value[label] += self.learn_rate*tree.get_predict_value(instance)
+                    f_value[label] += self.learn_rate * tree.get_predict_value(instance)
         return f_value
 
     def predict(self, instance):
@@ -290,7 +300,7 @@ class GBDT:
         if self.loss.K == 1:
             f_value = self.compute_instance_f_value(instance)
             probs = dict()
-            probs['+1'] = 1/(1+exp(-2*f_value))
+            probs['+1'] = 1 / (1 + exp(-2 * f_value))
             probs['-1'] = 1 - probs['+1']
         else:
             f_value = self.compute_instance_f_value(instance)
@@ -301,7 +311,7 @@ class GBDT:
             probs = dict()
             # 归一化，并得到相应的概率值
             for label in exp_values:
-                probs[label] = exp_values[label]/exp_sum
+                probs[label] = exp_values[label] / exp_sum
         return probs
 
     def predict_label(self, instance):

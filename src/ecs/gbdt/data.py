@@ -10,10 +10,12 @@ class DataSet:
         line_cnt = 0
         self.instances = dict()
         self.distinct_valueset = dict()  # just for real value type
-        for line in open(filename):
+        # for line in open(filename):
+        for line in filename:
             if line == "\n":
                 continue
-            fields = line[:-1].split(",")
+            # fields = line[:-1].split(",")
+            fields = line
             if line_cnt == 0:  # csv head
                 self.field_names = tuple(fields)
             else:

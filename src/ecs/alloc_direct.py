@@ -1,7 +1,7 @@
 # coding=utf-8
 
 
-def assign(physical, flavors):
+def assign(opt_type,physical, flavors):
     fs = sorted(flavors, key=lambda x: x.id, reverse=True)
     if len(fs) <= 0:
         return ["0"]

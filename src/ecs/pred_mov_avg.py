@@ -1,5 +1,7 @@
 # coding=utf-8
 import datetime
+from gbdt.data import DataSet
+from gbdt.model import GBDT
 
 
 def get_series(ecs_lines, d, train_start):
@@ -51,8 +53,8 @@ def coef(y):
     return b_0, b_1
 
 
-def get_reg(l, k):
-    # 计算滑动窗口的回归
+def get_linear_reg(l, k):
+    # 计算滑动窗口的线性回归
     i = k
     s = []
     while i < len(l):
@@ -78,6 +80,6 @@ def predict(ecs_lines, pred_start, pred_end, flavors):
 
     for f in flavors:
         # result[f] = get_average(d[f], predict_days)
-        result[f] = get_reg(d[f], predict_days)
+        result[f] = get_linear_reg(d[f], predict_days)
 
     return result
