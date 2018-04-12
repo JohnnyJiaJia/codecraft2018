@@ -1,0 +1,9 @@
+32 64 1200
+
+CPU
+
+3
+
+flavor5:3
+flavor10:2
+flavor15:1

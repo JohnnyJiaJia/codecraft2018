@@ -1,5 +1,6 @@
 # from alloc_dp import assign
-from alloc_direct import assign
+# from alloc_direct import assign
+from alloc_exhaustive import assign
 import os
 from head import Flavor
 
@@ -12,7 +13,7 @@ def get_flavor(s):
     name, n = s.strip().split(":")
     n = int(n)
     f_id = int(name[6:])
-    cpu = 2 ** (f_id / 4)
+    cpu = 2 ** ((f_id-1) / 3)
     tmp = f_id % 3
     if tmp == 0:
         mem = cpu * 4
