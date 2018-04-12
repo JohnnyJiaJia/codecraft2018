@@ -1,6 +1,7 @@
 # from alloc_dp import assign
 # from alloc_direct import assign
-from alloc_exhaustive import assign
+# from alloc_exhaustive import assign
+from alloc_e2 import assign
 import os
 from head import Flavor
 
@@ -26,7 +27,7 @@ def get_flavor(s):
 
 # f_names = [i for i in os.listdir(dir) if "case" in i]
 
-f_names = ["case1.txt"]
+f_names = ["case7.txt"]
 
 for f_name in sorted(f_names):
     with open(dir + "/" + f_name) as f:

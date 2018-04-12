@@ -3,8 +3,7 @@ import copy
 
 def assign(opt_type, physical, flavors):
     fs = sorted(flavors, key=lambda x: x.id, reverse=True)
-    totalcpu = 0
-    totalmem = 0
+    totalcpu, totalmem = 0, 0
     for f in fs:
         totalcpu += f.num * f.cpu
         totalmem += f.num * f.mem
