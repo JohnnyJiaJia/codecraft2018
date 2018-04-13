@@ -24,6 +24,18 @@ def get_average(l, k):
         totalsum += sum(s[j:])/(len(s)-j)
     return totalsum/len(s)
 
+def get_weighted_average(l, k):
+    i = k
+    s = []
+    while i < len(l):
+        s.append(sum(l[i - k:i]))
+        i += 1
+    res = 0
+    alpha = 0.6
+    for j in range(len(s)-1,-1,-1):
+        res += s[j] * alpha * ((1 - alpha) ** (len(s)-1-j))
+    return int(res)
+
 def predict(ecs_lines, pred_start, pred_end, flavors):
     result = dict()
     train_start = datetime.datetime.strptime(ecs_lines[0].strip().split("\t")[-1], "%Y-%m-%d %H:%M:%S")
@@ -39,7 +51,8 @@ def predict(ecs_lines, pred_start, pred_end, flavors):
     get_series(ecs_lines, d, train_start)
 
     for f in flavors:
-        result[f] = get_average(d[f], predict_days)
+        # result[f] = get_average(d[f], predict_days)
+        result[f] = get_weighted_average(d[f], predict_days)
         # result[f] = get_linear_reg(d[f], predict_days)
 
     return result
