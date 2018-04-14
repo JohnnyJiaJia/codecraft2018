@@ -1,11 +1,10 @@
 # coding=utf-8
 import datetime
 # import alloc_direct as alloc
-# import alloc_dp as alloc
-# import alloc_e2 as alloc
 import alloc_dp2 as alloc
 # import pred_total_avg as pred
-import pred_mov_avg as pred
+# import pred_mov_avg as pred
+import pred_m2 as pred
 
 from head import Flavor
 
