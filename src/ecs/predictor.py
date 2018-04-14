@@ -3,16 +3,14 @@ import datetime
 # import alloc_direct as alloc
 import alloc_dp2 as alloc
 # import pred_total_avg as pred
-import pred_mov_avg as pred
-# import pred_m2 as pred
+# import pred_mov_avg as pred
+import pred_m2 as pred
 
 from head import Flavor
 
 
 def predict_vm(ecs_lines, input_lines):
-    start = datetime.datetime.strptime(input_lines[-2].strip(), "%Y-%m-%d %H:%M:%S")
-    end = datetime.datetime.strptime(input_lines[-1].strip(), "%Y-%m-%d %H:%M:%S")
-
+    # flavor种类数量
     flavor_num = int(input_lines[2].strip())
 
     fs = []
@@ -20,6 +18,11 @@ def predict_vm(ecs_lines, input_lines):
         f, cpu, mem = l.strip().split()
         fl = Flavor(f, cpu, int(mem) / 1024)
         fs.append(fl)
+
+    start = datetime.datetime.strptime(input_lines[6 + flavor_num].strip(), "%Y-%m-%d %H:%M:%S")
+    end = datetime.datetime.strptime(input_lines[7 + flavor_num].strip(), "%Y-%m-%d %H:%M:%S")
+
+    opt_type = input_lines[4 + flavor_num].strip()
 
     # 替换预测方式，在import中修改
     fd = pred.predict(ecs_lines, start, end, [f.name for f in fs])
@@ -31,7 +34,7 @@ def predict_vm(ecs_lines, input_lines):
     for f in fs:
         result.append("{} {}".format(f.name, f.num))
     result.append("")
-    opt_type = input_lines[-4].strip()
+
     physical = [int(i) for i in input_lines[0].strip().split()]
 
     fs = [f for f in fs if f.num > 0]
