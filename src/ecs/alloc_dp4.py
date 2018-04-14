@@ -16,12 +16,12 @@ def assign(opt_type, physical, flavors):
         plan[number] = dict()
         n = len(fs)
         dp = [[[0 for k in range(n + 1)] for j in range(MEM + 1)] for i in range(CPU + 1)]
-        # 可以修改成二维的
+
         for i in range(1, CPU + 1):
             for j in range(1, MEM + 1):
                 for k in range(1, n + 1):
                     f = fs[k - 1]
-                    v = f.cpu if opt_type == "CPU" else f.mem
+                    v = f.cpu * 1.0 / CPU + f.mem * 1.0 / MEM
                     if i >= f.cpu and j >= f.mem:
                         dp[i][j][k] = max(dp[i - f.cpu][j - f.mem][k - 1] + v, dp[i][j][k - 1])
                     else:
