@@ -15,27 +15,63 @@ def get_series(ecs_lines, d, train_start):
 
 def get_average(l, k):
     i = k
-    s = []
+    s = 0
+    j = 0
     while i < len(l):
-        s.append(sum(l[i - k:i]))
+        s += sum(l[i - k:i])
+        j += 1
         i += 1
-    totalsum = 0
-    for j in range(len(s)):
-        totalsum += sum(s[j:])/(len(s)-j)
-    return totalsum/len(s)
+    return s / j
 
-def get_weighted_average(l, k):
+
+def mean(x):
+    return float(sum(x)) / max(len(x), 1)
+
+
+def multiply(x, y):
+    return [i * j for i, j in zip(x, y)]
+
+
+def coef(y):
+    n = len(y)
+    x = range(n)
+
+    # mean of x and y vector
+    m_x, m_y = mean(x), mean(y)
+
+    # calculating cross-deviation and deviation about x
+    tmp = n * m_y * m_x
+    SS_xy = sum([i - tmp for i in multiply(x, y)])
+    tmp = n * m_x * m_x
+
+    SS_xx = sum([i - tmp for i in multiply(x, x)])
+
+    # calculating regression coefficients
+    b_1 = SS_xy / SS_xx
+    b_0 = m_y - b_1 * m_x
+
+    return b_0, b_1
+
+
+def get_linear_reg(l, k):
+    # 计算滑动窗口的线性回归
     i = k
     s = []
     while i < len(l):
         s.append(sum(l[i - k:i]))
         i += 1
-    res = 0
-    alpha = 0.6
-    print s
-    for j in range(len(s)-1,-1,-1):
-        res += s[j] * alpha * ((1 - alpha) ** (len(s)-1-j))
-    return int(res)
+    b_0, b_1 = coef(s)
+    return int(abs(b_0 + b_1 * i))
+
+
+def get_history_max(l, k):
+    i = k
+    s = []
+    while i < len(l):
+        s.append(sum(l[i - k:i]))
+        i += 1
+    return max(s)
+
 
 def predict(ecs_lines, pred_start, pred_end, flavors):
     result = dict()
@@ -52,8 +88,6 @@ def predict(ecs_lines, pred_start, pred_end, flavors):
     get_series(ecs_lines, d, train_start)
 
     for f in flavors:
-        # result[f] = get_average(d[f], predict_days)
-        result[f] = get_weighted_average(d[f], predict_days)
-        # result[f] = get_linear_reg(d[f], predict_days)
+        result[f] = get_history_max(d[f], predict_days)
 
     return result
