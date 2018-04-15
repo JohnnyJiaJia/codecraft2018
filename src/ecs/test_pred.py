@@ -1,8 +1,9 @@
 # coding=utf-8
 import sys
 # from pred_max import predict
-from pred_m2 import predict
+# from pred_m2 import predict
 # from pred_mov_avg import predict
+from pred_comb import predict
 import numpy as np
 
 import datetime
@@ -32,7 +33,7 @@ def test_pred(ecs_lines, days=7):
     train_data, test_data = ecs_lines[:bln], ecs_lines[bln:]
     real = count(flavors, train_data)
     pred = predict(train_data, pred_start, pred_end, flavors)
-    print accuracy(pred, real)
+    return accuracy(pred, real)
 
 
 def count(flavors, lines):
@@ -49,18 +50,30 @@ def count(flavors, lines):
 def accuracy(d1, d2):
     a1 = np.array([d1[f] for f in flavors])
     a2 = np.array([d2[f] for f in flavors])
-    print a1
-    print a2
+    # print a1
+    # print a2
     f1 = np.sqrt(np.mean((a1 - a2) ** 2))
     f2 = np.sqrt(np.mean(a1 ** 2)) + np.sqrt(np.mean(a2 ** 2))
     return 1 - f1 / f2
 
 
-# f_names = ["data_2015_2.txt", "data_2015_3.txt"]
-f_names = ["data_2015_12.txt","data_2016_1.txt"]
+cases = [
+    ["data_2015_1.txt"],
+    ["data_2015_2.txt"],
+    ["data_2015_3.txt"],
+    ["data_2015_4.txt"],
+    ["data_2015_5.txt"],
+    ["data_2015_12.txt"],
+    ["data_2016_1.txt"],
+]
 
-lines = []
-for f_name in f_names:
-    with open(dir + "/" + f_name) as f:
-        lines += f.readlines()
-test_pred(lines, 7)
+results=[]
+for f_names in cases:
+    lines = []
+    n=len(f_names)
+    for f_name in f_names:
+        with open(dir + "/" + f_name) as f:
+            lines += f.readlines()
+    results.append(test_pred(lines, 7*n))
+
+print np.mean(results)

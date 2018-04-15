@@ -1,7 +1,5 @@
 # coding=utf-8
 import datetime
-from gbdt.data import DataSet
-from gbdt.model import GBDT
 
 
 def get_series(ecs_lines, d, train_start):

@@ -1,7 +1,5 @@
 # coding=utf-8
 import datetime
-from gbdt.data import DataSet
-from gbdt.model import GBDT
 
 
 def get_series(ecs_lines, d, train_start):
@@ -40,16 +38,10 @@ def coef(y):
     m_x, m_y = mean(x), mean(y)
 
     # calculating cross-deviation and deviation about x
-    tmp = n * m_y * m_x
-    SS_xy = sum([i - tmp for i in multiply(x, y)])
-    tmp = n * m_x * m_x
-
-    SS_xx = sum([i - tmp for i in multiply(x, x)])
-
-    # calculating regression coefficients
-    b_1 = SS_xy / SS_xx
+    f1 = sum([(x_i - m_x) * (y_i - m_y) for x_i, y_i in zip(x, y)])
+    f2 = sum([(x_i - m_x) ** 2 for x_i in x])
+    b_1 = float(f1) / f2
     b_0 = m_y - b_1 * m_x
-
     return b_0, b_1
 
 
@@ -83,3 +75,7 @@ def predict(ecs_lines, pred_start, pred_end, flavors):
         result[f] = get_linear_reg(d[f], predict_days)
 
     return result
+
+
+if __name__ == "__main__":
+    print coef([2 * i + 1 for i in range(10)])

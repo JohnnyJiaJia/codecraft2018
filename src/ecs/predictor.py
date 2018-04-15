@@ -5,7 +5,8 @@ import alloc_dp2 as alloc
 # import pred_total_avg as pred
 # import pred_mov_avg as pred
 # import pred_m2 as pred
-import pred_max as pred
+# import pred_max as pred
+import pred_comb as pred
 
 from head import Flavor
 

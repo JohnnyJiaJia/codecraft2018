@@ -1,7 +1,5 @@
 # coding=utf-8
 import datetime
-from gbdt.data import DataSet
-from gbdt.model import GBDT
 
 
 def get_series(ecs_lines, d, train_start):
@@ -21,8 +19,9 @@ def get_average(l, k):
         i += 1
     totalsum = 0
     for j in range(len(s)):
-        totalsum += sum(s[j:])/(len(s)-j)
-    return totalsum/len(s)
+        totalsum += sum(s[j:]) / (len(s) - j)
+    return totalsum / len(s)
+
 
 def get_weighted_average(l, k):
     i = k
@@ -32,10 +31,11 @@ def get_weighted_average(l, k):
         i += 1
     res = 0
     alpha = 0.6
-    print s
-    for j in range(len(s)-1,-1,-1):
-        res += s[j] * alpha * ((1 - alpha) ** (len(s)-1-j))
+    # print s
+    for j in range(len(s) - 1, -1, -1):
+        res += s[j] * alpha * ((1 - alpha) ** (len(s) - 1 - j))
     return int(res)
+
 
 def predict(ecs_lines, pred_start, pred_end, flavors):
     result = dict()
