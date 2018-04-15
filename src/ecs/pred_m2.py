@@ -30,7 +30,7 @@ def get_weighted_average(l, k):
         s.append(sum(l[i - k:i]))
         i += 1
     res = 0
-    alpha = 0.6
+    alpha = 0.65
     # print s
     for j in range(len(s) - 1, -1, -1):
         res += s[j] * alpha * ((1 - alpha) ** (len(s) - 1 - j))
