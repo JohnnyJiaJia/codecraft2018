@@ -13,5 +13,6 @@ def predict(ecs_lines, pred_start, pred_end, flavors):
     result_total_avg = pred_total_avg.predict(ecs_lines, pred_start, pred_end, flavors)
     result = dict()
     for f in flavors:
-        result[f] = int((result_m2[f] + result_mov_avg[f] + result_max[f]) / 3)
+        # result[f] = int((result_m2[f] + result_mov_avg[f] + result_max[f]) / 3)
+        result[f] = int(1.3 * result_mov_avg[f])
     return result
